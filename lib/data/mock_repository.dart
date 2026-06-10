@@ -1,14 +1,16 @@
 import '../models/models.dart';
 
-/// Builds a keyword-matched stock image URL so each event shows a photo that
-/// fits its theme (e.g. "students,coding" for a hackathon). [tags] are
-/// comma-separated subjects; [lock] pins the same photo across rebuilds.
+/// Returns a stable, topic-matched stock photo URL. Each opportunity is
+/// hand-paired with one specific Unsplash photo so the image always fits its
+/// theme (e.g. solar panels for a sustainability challenge, a server room for
+/// a cloud internship). Unlike a keyword search, [id] pins one exact photo, so
+/// it loads fast and never returns an off-topic result.
 ///
-/// NOTE: these are themed stock photos, not pictures of real ALU events. When
+/// NOTE: these are curated stock photos, not pictures of real ALU events. When
 /// the team has actual photos, drop them in `assets/` and replace these URLs
 /// with asset paths (and use `Image.asset` in [AppImage]).
-String _img(String tags, int lock) =>
-    'https://loremflickr.com/800/600/$tags?lock=$lock';
+String _img(String id) =>
+    'https://images.unsplash.com/photo-$id?auto=format&fit=crop&w=800&q=80';
 
 /// In-memory data source for the Home Feed & Discovery feature.
 ///
@@ -39,7 +41,7 @@ class MockRepository {
           'to solve real challenges facing African communities. Form a team, '
           'ship a prototype, and pitch to a panel of industry judges.',
       type: OpportunityType.hackathon,
-      imageUrl: _img('african,students,hackathon,coding', 1),
+      imageUrl: _img('1504384308090-c894fdcc538d'), // hackathon hall
       deadline: DateTime(2026, 6, 12),
       trending: true,
       organizer: 'ALU Entrepreneurship Lab',
@@ -53,7 +55,7 @@ class MockRepository {
           'A 12-week summer internship on Google\'s Product Design team. '
           'Work alongside senior designers on real products used by millions.',
       type: OpportunityType.internship,
-      imageUrl: _img('product,design,workspace,ux', 2),
+      imageUrl: _img('1581291518857-4e27b48ff24e'), // UI/UX wireframe sketch
       deadline: DateTime(2026, 7, 1),
       trending: true,
       organizer: 'Google',
@@ -68,7 +70,7 @@ class MockRepository {
           'IoT technologies. Top teams receive funding and mentorship to take '
           'their solution to market.',
       type: OpportunityType.hackathon,
-      imageUrl: _img('sustainability,environment,solar,green', 3),
+      imageUrl: _img('1509391366360-2e959784a276'), // solar panels
       deadline: DateTime(2026, 10, 24),
       score: 850,
       trending: true,
@@ -83,7 +85,7 @@ class MockRepository {
           'A six-month fellowship pairing fellows with experienced engineering '
           'mentors at top startups across the continent.',
       type: OpportunityType.fellowship,
-      imageUrl: _img('software,programming,code,laptop', 4),
+      imageUrl: _img('1461749280684-dccba630e2f6'), // source code on screen
       deadline: DateTime(2026, 10, 30),
       organizer: 'Africa Code Network',
       location: 'Hybrid',
@@ -96,7 +98,7 @@ class MockRepository {
           'Spend the summer building scalable cloud services with Microsoft\'s '
           'Azure team. Open to penultimate-year students.',
       type: OpportunityType.internship,
-      imageUrl: _img('cloud,computing,server,datacenter', 6),
+      imageUrl: _img('1558494949-ef010cbdcc31'), // data center / servers
       deadline: DateTime(2026, 7, 15),
       organizer: 'Microsoft',
       location: 'Nairobi / Remote',
@@ -109,7 +111,7 @@ class MockRepository {
           'A weekend hackathon focused on financial inclusion. Build a working '
           'prototype and pitch to a panel of fintech founders.',
       type: OpportunityType.hackathon,
-      imageUrl: _img('fintech,startup,africa,mobile', 7),
+      imageUrl: _img('1522071820081-009f0129c71c'), // team coding together
       deadline: DateTime(2026, 8, 2),
       organizer: 'AfricaTech',
       location: 'Lagos',
@@ -122,7 +124,7 @@ class MockRepository {
           'A paid internship placing you on a distributed engineering team '
           'building products for global clients. Mentorship included.',
       type: OpportunityType.internship,
-      imageUrl: _img('developer,coding,team,office', 8),
+      imageUrl: _img('1573164713988-8665fc963095'), // African developers coding
       deadline: DateTime(2026, 7, 20),
       organizer: 'Andela',
       location: 'Remote',
@@ -135,7 +137,7 @@ class MockRepository {
           'Join Flutterwave\'s product team to help scale digital payments '
           'across Africa. Work on real features shipped to merchants.',
       type: OpportunityType.internship,
-      imageUrl: _img('mobile,payment,money,smartphone', 9),
+      imageUrl: _img('1556742502-ec7c0e9f34b1'), // mobile card payment
       deadline: DateTime(2026, 8, 10),
       organizer: 'Flutterwave',
       location: 'Lagos / Hybrid',
@@ -148,7 +150,7 @@ class MockRepository {
           'Use data science to support UNICEF programmes improving outcomes '
           'for children. Open to students with Python experience.',
       type: OpportunityType.internship,
-      imageUrl: _img('data,analytics,charts,dashboard', 10),
+      imageUrl: _img('1551288049-bebda4e38f71'), // analytics dashboard
       deadline: DateTime(2026, 9, 1),
       organizer: 'UNICEF',
       location: 'Kigali',
@@ -161,7 +163,7 @@ class MockRepository {
           'A continent-wide hackathon to prototype climate-resilience tools. '
           'Winning teams join an accelerator with seed funding.',
       type: OpportunityType.hackathon,
-      imageUrl: _img('climate,nature,forest,green', 11),
+      imageUrl: _img('1441974231531-c6227db76b6e'), // forest / nature
       deadline: DateTime(2026, 8, 25),
       organizer: 'Climate Hack',
       location: 'Accra',
@@ -174,7 +176,7 @@ class MockRepository {
           'A 36-hour sprint to design digital health solutions for rural '
           'clinics. Clinicians and engineers team up to ship prototypes.',
       type: OpportunityType.hackathon,
-      imageUrl: _img('hospital,health,medical,doctor', 12),
+      imageUrl: _img('1576091160550-2173dba999ef'), // health / medical tech
       deadline: DateTime(2026, 9, 14),
       organizer: 'MedConnect',
       location: 'Kampala',
@@ -187,7 +189,7 @@ class MockRepository {
           'Partner with AWS architects to build a serverless app over a '
           'weekend. Best solutions win AWS credits and certification vouchers.',
       type: OpportunityType.hackathon,
-      imageUrl: _img('cloud,server,network,aws', 13),
+      imageUrl: _img('1544197150-b99a580bb7a8'), // network / cloud cabling
       deadline: DateTime(2026, 7, 28),
       organizer: 'ALU x AWS',
       location: 'Kigali Campus',
@@ -200,7 +202,7 @@ class MockRepository {
           'The largest tech gathering in the region. Meet founders, investors '
           'and engineers shaping East Africa\'s tech scene.',
       type: OpportunityType.event,
-      imageUrl: _img('conference,networking,technology,summit', 5),
+      imageUrl: _img('1540575467063-178a50c2df87'), // conference audience
       deadline: DateTime(2026, 6, 14),
       organizer: 'Kigali Innovation City',
       location: 'Kigali Convention Centre',
@@ -212,19 +214,19 @@ class MockRepository {
       id: 'cat1',
       name: 'Tech',
       subtitle: '24 Active Communities',
-      imageUrl: _img('technology,circuit,code,computer', 101),
+      imageUrl: _img('1620712943543-bcc4688e7485'), // AI / robotics
     ),
     Category(
       id: 'cat2',
       name: 'Entrepreneurship',
       subtitle: '12 Active Programs',
-      imageUrl: _img('entrepreneur,business,startup,meeting', 102),
+      imageUrl: _img('1556761175-b413da4baf72'), // startup team meeting
     ),
     Category(
       id: 'cat3',
       name: 'Leadership',
       subtitle: '8 Leadership Tracks',
-      imageUrl: _img('leadership,team,mountain,summit', 103),
+      imageUrl: _img('1454165804606-c3d57bc86b40'), // strategy / leadership session
     ),
   ];
 
