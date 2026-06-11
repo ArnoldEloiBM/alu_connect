@@ -112,3 +112,63 @@ class Discussion {
     required this.participants,
   });
 }
+
+class Community {
+  final String id;
+  final String name;
+  final String category;
+  final String description;
+  final String imageUrl;
+  final int members;
+  final List<Discussion> discussions;
+
+  const Community({
+    required this.id,
+    required this.name,
+    required this.category,
+    required this.description,
+    required this.imageUrl,
+    required this.members,
+    required this.discussions,
+  });
+}
+
+class ChatThread {
+  final String id;
+  final String title;
+  final String subtitle;
+  final String lastMessage;
+  final DateTime timestamp;
+  final int unreadCount;
+  final bool isGroup;
+  final String communityId;
+
+  const ChatThread({
+    required this.id,
+    required this.title,
+    required this.subtitle,
+    required this.lastMessage,
+    required this.timestamp,
+    required this.unreadCount,
+    required this.isGroup,
+    required this.communityId,
+  });
+}
+
+class Message {
+  final String id;
+  final String threadId;
+  final String sender;
+  final String text;
+  final DateTime time;
+  final bool isMine;
+
+  const Message({
+    required this.id,
+    required this.threadId,
+    required this.sender,
+    required this.text,
+    required this.time,
+    required this.isMine,
+  });
+}

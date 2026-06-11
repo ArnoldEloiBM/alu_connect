@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import 'community_list_screen.dart';
 import 'discover_screen.dart';
 import 'home_screen.dart';
+import 'messages_screen.dart';
 
 /// App scaffold that hosts the bottom navigation. Home (index 0) and Search
 /// (index 2) are owned by Member 2; the other tabs are placeholders that
@@ -18,9 +20,9 @@ class _MainShellState extends State<MainShell> {
 
   late final List<Widget> _tabs = const [
     HomeScreen(),
-    _Placeholder(label: 'Clubs', icon: Icons.groups),
+    CommunityListScreen(),
     DiscoverScreen(),
-    _Placeholder(label: 'Messages', icon: Icons.chat_bubble_outline),
+    MessagesScreen(),
     _Placeholder(label: 'Profile', icon: Icons.person_outline),
   ];
 
