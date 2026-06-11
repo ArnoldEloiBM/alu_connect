@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_theme.dart';
 import 'discover_screen.dart';
+import 'events/create_event_screen.dart';
+import 'events/my_events_screen.dart';
 import 'home_screen.dart';
 
-/// App scaffold that hosts the bottom navigation. Home (index 0) and Search
-/// (index 2) are owned by Member 2; the other tabs are placeholders that
-/// teammates will fill in.
+/// App scaffold with bottom navigation. Member 4 owns FAB + My Events (Profile tab).
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
@@ -21,17 +22,26 @@ class _MainShellState extends State<MainShell> {
     _Placeholder(label: 'Clubs', icon: Icons.groups),
     DiscoverScreen(),
     _Placeholder(label: 'Messages', icon: Icons.chat_bubble_outline),
-    _Placeholder(label: 'Profile', icon: Icons.person_outline),
+    MyEventsScreen(),
   ];
+
+  void _openCreateEvent() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const CreateEventScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _index, children: _tabs),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: _index == 4
+          ? null
+          : FloatingActionButton(
+              onPressed: _openCreateEvent,
+              tooltip: 'Create event',
+              child: const Icon(Icons.add),
+            ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
         onTap: (i) => setState(() => _index = i),
@@ -45,9 +55,13 @@ class _MainShellState extends State<MainShell> {
           BottomNavigationBarItem(icon: Icon(Icons.groups_outlined), label: 'Clubs'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.chat_bubble_outline), label: 'Messages'),
+            icon: Icon(Icons.chat_bubble_outline),
+            label: 'Messages',
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline), label: 'Profile'),
+            icon: Icon(Icons.event_note_outlined),
+            label: 'My Events',
+          ),
         ],
       ),
     );

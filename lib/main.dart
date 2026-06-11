@@ -1,64 +1,29 @@
 import 'package:flutter/material.dart';
-import 'features/profile/screens/profile.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'screens/main_shell.dart';
+import 'services/event_service.dart';
+import 'services/user_session.dart';
+import 'theme/app_theme.dart';
+import 'widgets/phone_frame.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await UserSession.instance.init();
+  await EventService.instance.init();
+  runApp(const ALUConnectApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  bool _isDarkMode = true;
+class ALUConnectApp extends StatelessWidget {
+  const ALUConnectApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ALU Connect',
       debugShowCheckedModeBanner: false,
-
-      // Dark theme — navy colors
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0D1B2A),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF0D1B2A),
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFFF5B800),
-          surface: Color(0xFF1B2B4B),
-        ),
-      ),
-
-      // Light theme — clean white version
-      theme: ThemeData(
-        brightness: Brightness.light,
-        scaffoldBackgroundColor: const Color(0xFFF0F2F5),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          foregroundColor: Color(0xFF0D1B2A),
-          elevation: 0,
-        ),
-        colorScheme: const ColorScheme.light(
-          primary: Color(0xFFF5B800),
-          surface: Colors.white,
-        ),
-      ),
-
-      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: ProfileScreen(
-        onDarkModeToggle: (val) {
-          setState(() {
-            _isDarkMode = val;
-          });
-        },
-      ),
+      theme: AppTheme.dark,
+      builder: (context, child) => PhoneFrame(child: child ?? const SizedBox()),
+      home: const MainShell(),
     );
   }
 }

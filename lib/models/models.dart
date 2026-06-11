@@ -7,6 +7,21 @@ library;
 
 enum OpportunityType { hackathon, internship, fellowship, event, program }
 
+enum EventStatus { active, postponed, cancelled }
+
+extension EventStatusLabel on EventStatus {
+  String get label {
+    switch (this) {
+      case EventStatus.active:
+        return 'Active';
+      case EventStatus.postponed:
+        return 'Postponed';
+      case EventStatus.cancelled:
+        return 'Cancelled';
+    }
+  }
+}
+
 extension OpportunityTypeLabel on OpportunityType {
   String get label {
     switch (this) {
@@ -36,6 +51,7 @@ class Opportunity {
   final bool trending;
   final String organizer;
   final String location;
+  final EventStatus status;
 
   const Opportunity({
     required this.id,
@@ -49,6 +65,7 @@ class Opportunity {
     this.trending = false,
     this.organizer = '',
     this.location = '',
+    this.status = EventStatus.active,
   });
 
   factory Opportunity.fromJson(Map<String, dynamic> json) {
@@ -67,8 +84,80 @@ class Opportunity {
       trending: json['trending'] as bool? ?? false,
       organizer: json['organizer'] as String? ?? '',
       location: json['location'] as String? ?? '',
+      status: EventStatus.values.firstWhere(
+        (s) => s.name == json['status'],
+        orElse: () => EventStatus.active,
+      ),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'subtitle': subtitle,
+        'description': description,
+        'type': type.name,
+        'imageUrl': imageUrl,
+        'deadline': deadline.toIso8601String(),
+        'score': score,
+        'trending': trending,
+        'organizer': organizer,
+        'location': location,
+        'status': status.name,
+      };
+
+  Opportunity copyWith({
+    String? id,
+    String? title,
+    String? subtitle,
+    String? description,
+    OpportunityType? type,
+    String? imageUrl,
+    DateTime? deadline,
+    int? score,
+    bool? trending,
+    String? organizer,
+    String? location,
+    EventStatus? status,
+  }) {
+    return Opportunity(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      description: description ?? this.description,
+      type: type ?? this.type,
+      imageUrl: imageUrl ?? this.imageUrl,
+      deadline: deadline ?? this.deadline,
+      score: score ?? this.score,
+      trending: trending ?? this.trending,
+      organizer: organizer ?? this.organizer,
+      location: location ?? this.location,
+      status: status ?? this.status,
+    );
+  }
+}
+
+/// Input payload for the event creation form (Member 4).
+class CreateEventInput {
+  final String title;
+  final String subtitle;
+  final String description;
+  final OpportunityType type;
+  final String location;
+  final DateTime deadline;
+  final String? localImagePath;
+  final int? capacity;
+
+  const CreateEventInput({
+    required this.title,
+    required this.subtitle,
+    required this.description,
+    required this.type,
+    required this.location,
+    required this.deadline,
+    this.localImagePath,
+    this.capacity,
+  });
 }
 
 class Category {

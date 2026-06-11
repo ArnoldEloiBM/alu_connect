@@ -3,6 +3,7 @@ import '../models/models.dart';
 import '../theme/app_theme.dart';
 import '../utils/date_utils.dart';
 import 'app_image.dart';
+import 'events/rsvp_button.dart';
 
 /// Large image-backed card used in the "Trending Now" hero slot.
 class FeaturedOpportunityCard extends StatelessWidget {
@@ -162,13 +163,11 @@ class MiniOpportunityCard extends StatelessWidget {
 class DetailedOpportunityCard extends StatelessWidget {
   final Opportunity opportunity;
   final VoidCallback? onTap;
-  final VoidCallback? onRsvp;
 
   const DetailedOpportunityCard({
     super.key,
     required this.opportunity,
     this.onTap,
-    this.onRsvp,
   });
 
   @override
@@ -246,38 +245,9 @@ class DetailedOpportunityCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.gold.withValues(alpha: 0.4),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                      BoxShadow(
-                        color: AppColors.gold.withValues(alpha: 0.2),
-                        blurRadius: 24,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    onPressed: onRsvp,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.gold,
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 22, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      'RSVP Now',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
+                RsvpButton(
+                  opportunity: opportunity,
+                  compact: true,
                 ),
               ],
             ),
