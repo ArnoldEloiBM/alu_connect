@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/mock_repository.dart';
 import '../models/models.dart';
 import '../theme/app_theme.dart';
+import '../utils/page_transitions.dart';
 import '../widgets/category_card.dart';
 import '../widgets/opportunity_cards.dart';
 import '../widgets/search_field.dart';
@@ -34,7 +35,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   void _openDetails(Opportunity o) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => EventDetailsScreen(opportunity: o)),
+      smoothTransition(EventDetailsScreen(opportunity: o)),
     );
   }
 
@@ -104,16 +105,39 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       const SizedBox(height: 12),
       if (results.isEmpty)
         Container(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(40),
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: AppColors.border),
           ),
-          child: Text(
-            'No results for "$_query"',
-            style: const TextStyle(color: AppColors.textSecondary),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.search_off,
+                size: 64,
+                color: AppColors.gold,
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'No results found',
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'for "$_query"',
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
+            ],
           ),
         )
       else

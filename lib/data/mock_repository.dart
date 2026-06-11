@@ -21,9 +21,13 @@ class MockRepository {
   MockRepository._();
   static final MockRepository instance = MockRepository._();
 
-  static const String _greetingName = 'Kwame';
+  /// User's display name. Defaults to "User" until auth is implemented.
+  /// When sign-in is added, this will be set to the authenticated user's name.
+  String _greetingName = 'User';
 
   String get greetingName => _greetingName;
+
+  set greetingName(String name) => _greetingName = name;
 
   // Reference "today" so relative copy like "Ends in 2 days" stays sensible
   // against the mock deadlines below. Replace with DateTime.now() when wired

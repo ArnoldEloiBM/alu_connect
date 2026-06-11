@@ -19,6 +19,7 @@ class FeaturedOpportunityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final indicator = DeadlineIndicator.from(opportunity.deadline, now);
     return GestureDetector(
       onTap: onTap,
       child: ClipRRect(
@@ -30,7 +31,7 @@ class FeaturedOpportunityCard extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               AppImage(url: opportunity.imageUrl),
-              // Dark gradient so the text stays legible over any image.
+              // Navy gradient overlay for depth and text legibility.
               DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -38,7 +39,7 @@ class FeaturedOpportunityCard extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withValues(alpha: 0.85),
+                      AppColors.surfaceAlt.withValues(alpha: 0.8),
                     ],
                   ),
                 ),
@@ -64,9 +65,9 @@ class FeaturedOpportunityCard extends StatelessWidget {
                             color: AppColors.gold, size: 14),
                         const SizedBox(width: 4),
                         Text(
-                          endsIn(opportunity.deadline, now),
-                          style: const TextStyle(
-                            color: AppColors.gold,
+                          indicator.text,
+                          style: TextStyle(
+                            color: indicator.color,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
@@ -106,7 +107,14 @@ class MiniOpportunityCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.surfaceAlt,
+              AppColors.surface,
+            ],
+          ),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.border),
         ),
@@ -165,12 +173,20 @@ class DetailedOpportunityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final indicator = DeadlineIndicator.from(opportunity.deadline, DateTime.now());
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.surfaceAlt,
+              AppColors.surface,
+            ],
+          ),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.border),
         ),
@@ -221,29 +237,46 @@ class DetailedOpportunityCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      prettyDate(opportunity.deadline),
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
+                      indicator.text,
+                      style: TextStyle(
+                        color: indicator.color,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
-                ElevatedButton(
-                  onPressed: onRsvp,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.gold,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 22, vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.gold.withValues(alpha: 0.4),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                      BoxShadow(
+                        color: AppColors.gold.withValues(alpha: 0.2),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
                   ),
-                  child: const Text(
-                    'RSVP Now',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  child: ElevatedButton(
+                    onPressed: onRsvp,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.gold,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 22, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'RSVP Now',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],
