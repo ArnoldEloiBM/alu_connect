@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/mock_repository.dart';
 import '../models/models.dart';
 import '../theme/app_theme.dart';
+import '../utils/page_transitions.dart';
 import '../widgets/deadline_row.dart';
 import '../widgets/filter_chips.dart';
 import '../widgets/opportunity_cards.dart';
@@ -23,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _openDetails(Opportunity o) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => EventDetailsScreen(opportunity: o)),
+      smoothTransition(EventDetailsScreen(opportunity: o)),
     );
   }
 

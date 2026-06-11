@@ -2,6 +2,8 @@
 /// pull in `intl` just for a few formats.
 library;
 
+import 'package:flutter/material.dart';
+
 const _months = [
   'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
   'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',
@@ -30,4 +32,41 @@ String endsIn(DateTime deadline, DateTime now) {
   if (diff == 0) return 'Ends today';
   if (diff == 1) return 'Ends tomorrow';
   return 'Ends in $diff days';
+}
+
+/// Returns urgency color and text for deadline indicator.
+/// Red (<3 days), Yellow (<7 days), White (normal).
+class DeadlineIndicator {
+  final Color color;
+  final String text;
+
+  const DeadlineIndicator({required this.color, required this.text});
+
+  factory DeadlineIndicator.from(DateTime deadline, DateTime now) {
+    final diff = DateTime(deadline.year, deadline.month, deadline.day)
+        .difference(DateTime(now.year, now.month, now.day))
+        .inDays;
+
+    if (diff < 0) {
+      return DeadlineIndicator(
+        color: const Color(0xFFE5484D),
+        text: 'Closed',
+      );
+    } else if (diff <= 3) {
+      return DeadlineIndicator(
+        color: const Color(0xFFE5484D),
+        text: '$diff days left',
+      );
+    } else if (diff <= 7) {
+      return DeadlineIndicator(
+        color: const Color(0xFFF5B301),
+        text: '$diff days left',
+      );
+    } else {
+      return DeadlineIndicator(
+        color: const Color(0xFFF5F7FA),
+        text: prettyDate(deadline),
+      );
+    }
+  }
 }
