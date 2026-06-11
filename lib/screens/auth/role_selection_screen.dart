@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../models/user_model.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/auth_widgets.dart';
+import '../../data/mock_repository.dart';
+import '../../services/user_session.dart';
 import '../main_shell.dart';
 import '../../services/auth_service.dart';
 
@@ -11,6 +13,8 @@ class RoleSelectionScreen extends StatefulWidget {
     super.key,
     required this.name,
     required this.email,
+    required this.password,
+    required this.onDarkModeToggle,
     required this.isAlumni,
     this.intakeMonth,
     this.intakeYear,
@@ -20,6 +24,8 @@ class RoleSelectionScreen extends StatefulWidget {
 
   final String name;
   final String email;
+  final String password;
+  final ValueChanged<bool> onDarkModeToggle;
   final bool isAlumni;
   final String? intakeMonth;
   final String? intakeYear;
@@ -56,12 +62,15 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
       graduationYear: widget.graduationYear,
       faculty: widget.faculty,
     );
-
-    // Mark user as logged in
+    await AuthService.savePassword(widget.email, widget.password);
     await AuthService.setCurrentUserEmail(widget.email);
+    await UserSession.instance.setDisplayName(widget.name);
+    MockRepository.instance.greetingName = widget.name;
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => MainShell(onDarkModeToggle: (_) {})),
+      MaterialPageRoute(
+        builder: (_) => MainShell(onDarkModeToggle: widget.onDarkModeToggle),
+      ),
       (r) => false,
     );
   }

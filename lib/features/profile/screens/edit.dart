@@ -36,6 +36,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_formKey.currentState!.validate()) {
       final updatedUser = User(
         name: _nameController.text.trim(),
+        email: widget.user.email,
         major: _majorController.text.trim(),
         campus: _campusController.text.trim(),
         classYear: widget.user.classYear,

@@ -19,22 +19,26 @@ class SettingsToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final labelColor = isDark ? Colors.white : const Color(0xFF0D1B2A);
+    final subtitleColor =
+        isDark ? Colors.white54 : Colors.black.withValues(alpha: 0.55);
+
     return Row(
       children: [
-        // Left side: label and optional subtitle
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
-                style: const TextStyle(color: Colors.white, fontSize: 14),
+                style: TextStyle(color: labelColor, fontSize: 14),
               ),
               if (subtitle != null) ...[
                 const SizedBox(height: 2),
                 Text(
                   subtitle!,
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                  style: TextStyle(color: subtitleColor, fontSize: 12),
                 ),
               ],
             ],

@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/auth_widgets.dart';
 import 'login_screen.dart';
+import '../../services/auth_service.dart';
 import 'role_selection_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  final ValueChanged<bool> onDarkModeToggle;
+
+  const SignUpScreen({super.key, required this.onDarkModeToggle});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -35,20 +38,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return null;
   }
 
-  String? _validateEmail(String? v) {
-    if (v == null || v.trim().isEmpty) return 'Email is required';
-    final re = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    if (!re.hasMatch(v.trim())) return 'Enter a valid email address';
-    return null;
-  }
+  String? _validateEmail(String? v) => AuthService.validateAluStudentEmail(v);
 
-  String? _validatePass(String? v) {
-    if (v == null || v.isEmpty) return 'Password is required';
-    if (v.length < 8) return 'Must be at least 8 characters';
-    if (!RegExp(r'[A-Z]').hasMatch(v)) return 'Include at least one uppercase letter';
-    if (!RegExp(r'[0-9]').hasMatch(v)) return 'Include at least one number';
-    return null;
-  }
+  String? _validatePass(String? v) => AuthService.validateStrongPassword(v);
 
   String? _validateConfirm(String? v) {
     if (v != _passCtrl.text) return 'Passwords do not match';
@@ -67,6 +59,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
+    final email = _emailCtrl.text.trim();
+    if (await AuthService.hasUserProfile(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'An account with this email already exists. Please sign in.',
+          ),
+        ),
+      );
+      return;
+    }
+
     setState(() => _loading = true);
     await Future.delayed(const Duration(milliseconds: 1000));
     if (!mounted) return;
@@ -77,11 +81,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       builder: (_) => RoleSelectionScreen(
         name: _nameCtrl.text.trim(),
         email: _emailCtrl.text.trim(),
+        password: _passCtrl.text,
         isAlumni: _isAlumni,
         intakeMonth: _isAlumni ? null : _selectedIntakeMonth,
         intakeYear: _isAlumni ? null : _selectedIntakeYear,
         graduationYear: _isAlumni ? _selectedGraduationYear : null,
         faculty: _selectedFaculty,
+        onDarkModeToggle: widget.onDarkModeToggle,
       ),
     ));
   }
@@ -177,7 +183,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // ── Email ────────────────────────────────────────────
                 AuthField(
                   label: 'Email address',
-                  hint: 'you@alueducation.com',
+                  hint: AuthService.emailHint,
                   controller: _emailCtrl,
                   prefixIcon: Icons.alternate_email_rounded,
                   keyboardType: TextInputType.emailAddress,
@@ -649,7 +655,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: GestureDetector(
                     onTap: () => Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                            builder: (_) => const LoginScreen())),
+                            builder: (_) => LoginScreen(
+                                  onDarkModeToggle: widget.onDarkModeToggle,
+                                ))),
                     child: RichText(
                       text: const TextSpan(
                         text: 'Already have an account?  ',

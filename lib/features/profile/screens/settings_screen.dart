@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+
+import '../../../screens/auth/login_screen.dart';
+import '../../../services/auth_service.dart';
 import '../widgets/settings.dart';
+import 'change_password_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -20,20 +24,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _eventReminders = true;
   bool _messageNotifs = true;
   bool _communityUpdates = false;
+  String _email = '';
 
   @override
   void initState() {
     super.initState();
     _darkMode = widget.isDarkMode;
+    _loadEmail();
+  }
+
+  Future<void> _loadEmail() async {
+    final email = await AuthService.getCurrentUserEmail();
+    if (!mounted) return;
+    setState(() => _email = email ?? '');
+  }
+
+  Future<void> _logOut() async {
+    await AuthService.clearCurrentUser();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => LoginScreen(onDarkModeToggle: widget.onDarkModeToggle),
+      ),
+      (route) => false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // All colors adapt to current theme automatically
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = Theme.of(context).scaffoldBackgroundColor;
     final cardColor = isDark ? const Color(0xFF1B2B4B) : Colors.white;
     final textColor = isDark ? Colors.white : const Color(0xFF0D1B2A);
+    final mutedColor =
+        isDark ? Colors.white54 : Colors.black.withValues(alpha: 0.45);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -46,11 +70,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          // ── Appearance ──────────────────────────────────
           _buildSectionHeader('Appearance'),
           _buildCard(
             cardColor: cardColor,
@@ -60,15 +82,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               value: _darkMode,
               onChanged: (val) {
                 setState(() => _darkMode = val);
-                // Bubbles up to main.dart to change the whole app theme
                 widget.onDarkModeToggle(val);
               },
             ),
           ),
-
           const SizedBox(height: 20),
-
-          // ── Notifications ───────────────────────────────
           _buildSectionHeader('Notifications'),
           _buildCard(
             cardColor: cardColor,
@@ -77,38 +95,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SettingsToggle(
                   label: 'Event Reminders',
                   value: _eventReminders,
-                  onChanged: (val) =>
-                      setState(() => _eventReminders = val),
+                  onChanged: (val) => setState(() => _eventReminders = val),
                 ),
                 Divider(
-                    color: isDark
-                        ? const Color(0xFF2E3D5C)
-                        : Colors.grey.shade200,
-                    height: 24),
+                  color: isDark
+                      ? const Color(0xFF2E3D5C)
+                      : Colors.grey.shade200,
+                  height: 24,
+                ),
                 SettingsToggle(
                   label: 'Direct Messages',
                   value: _messageNotifs,
-                  onChanged: (val) =>
-                      setState(() => _messageNotifs = val),
+                  onChanged: (val) => setState(() => _messageNotifs = val),
                 ),
                 Divider(
-                    color: isDark
-                        ? const Color(0xFF2E3D5C)
-                        : Colors.grey.shade200,
-                    height: 24),
+                  color: isDark
+                      ? const Color(0xFF2E3D5C)
+                      : Colors.grey.shade200,
+                  height: 24,
+                ),
                 SettingsToggle(
                   label: 'Community Updates',
                   value: _communityUpdates,
-                  onChanged: (val) =>
-                      setState(() => _communityUpdates = val),
+                  onChanged: (val) => setState(() => _communityUpdates = val),
                 ),
               ],
             ),
           ),
-
           const SizedBox(height: 20),
-
-          // ── Account ─────────────────────────────────────
           _buildSectionHeader('Account'),
           _buildCard(
             cardColor: cardColor,
@@ -117,34 +131,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _buildAccountRow(
                   icon: Icons.email_outlined,
                   label: 'Email',
-                  value: 'charlotte@alueducation.com',
+                  value: _email.isNotEmpty ? _email : 'Not signed in',
                   textColor: textColor,
+                  mutedColor: mutedColor,
                 ),
                 Divider(
-                    color: isDark
-                        ? const Color(0xFF2E3D5C)
-                        : Colors.grey.shade200,
-                    height: 24),
-                _buildAccountRow(
-                  icon: Icons.lock_outlined,
-                  label: 'Change Password',
-                  value: '',
-                  textColor: textColor,
+                  color: isDark
+                      ? const Color(0xFF2E3D5C)
+                      : Colors.grey.shade200,
+                  height: 24,
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ChangePasswordScreen(),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: _buildAccountRow(
+                    icon: Icons.lock_outlined,
+                    label: 'Change Password',
+                    value: '',
+                    textColor: textColor,
+                    mutedColor: mutedColor,
+                  ),
                 ),
               ],
             ),
           ),
-
           const SizedBox(height: 32),
-
-          // ── Log Out ─────────────────────────────────────
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () {
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/login', (_) => false);
-              },
+              onPressed: _logOut,
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFFFF6B6B),
                 side: const BorderSide(color: Color(0xFFFF6B6B)),
@@ -192,20 +214,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required String label,
     required String value,
     required Color textColor,
+    required Color mutedColor,
   }) {
     return Row(
       children: [
         Icon(icon, color: const Color(0xFFF5B800), size: 20),
         const SizedBox(width: 12),
         Expanded(
-          child: Text(label,
-              style: TextStyle(color: textColor, fontSize: 14)),
+          child: Text(
+            label,
+            style: TextStyle(color: textColor, fontSize: 14),
+          ),
         ),
-        Text(value,
-            style: TextStyle(
-                color: textColor.withOpacity(0.4), fontSize: 13)),
-        Icon(Icons.chevron_right,
-            color: textColor.withOpacity(0.3), size: 18),
+        if (value.isNotEmpty)
+          Flexible(
+            child: Text(
+              value,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
+              style: TextStyle(color: mutedColor, fontSize: 13),
+            ),
+          ),
+        Icon(Icons.chevron_right, color: mutedColor, size: 18),
       ],
     );
   }

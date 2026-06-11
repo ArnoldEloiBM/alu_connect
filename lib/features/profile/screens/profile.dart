@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../services/auth_service.dart';
 import '../models/user.dart';
 import '../widgets/impact_score_bar.dart';
 import '../widgets/achievement_badge.dart';
@@ -50,11 +52,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    user = User(
-      name: 'Umutoni Charlotte',
+    user = _defaultUser();
+    _loadLoggedInProfile();
+  }
+
+  User _defaultUser() {
+    return User(
+      name: 'ALU Student',
+      email: '',
       major: 'Social Innovation & Entrepreneurship',
       campus: 'ALU Rwanda',
-      classYear: 'Class of 2026',
+      classYear: '',
       impactScore: 850,
       rankLabel: 'Ranked Top 6% Globally',
       nextLevel: 'Impact Titan',
@@ -64,6 +72,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
       communities: 5,
       connections: 87,
     );
+  }
+
+  Future<void> _loadLoggedInProfile() async {
+    final profile = await AuthService.getCurrentUserProfile();
+    if (!mounted || profile == null) return;
+
+    final fullName = profile['fullName'] is String
+        ? profile['fullName'] as String
+        : user.name;
+    final email = profile['email'] is String
+        ? profile['email'] as String
+        : await AuthService.getCurrentUserEmail() ?? '';
+
+    setState(() {
+      user = User(
+        name: fullName,
+        email: email,
+        major: profile['faculty'] is String
+            ? profile['faculty'] as String
+            : user.major,
+        campus: user.campus,
+        classYear: user.classYear,
+        impactScore: user.impactScore,
+        rankLabel: user.rankLabel,
+        nextLevel: user.nextLevel,
+        badges: user.badges,
+        joinedHubs: user.joinedHubs,
+        eventsAttended: user.eventsAttended,
+        communities: user.communities,
+        connections: user.connections,
+      );
+    });
   }
 
   // Get initials from full name
@@ -438,8 +478,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-
-      bottomNavigationBar: _buildBottomNavBar(isDark),
     );
   }
 
@@ -493,24 +531,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 6),
-
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF5B800),
-              borderRadius: BorderRadius.circular(20),
+          if (user.email.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              user.email,
+              style: TextStyle(color: subColor, fontSize: 14),
+              textAlign: TextAlign.center,
             ),
-            child: Text(
-              user.classYear,
-              style: const TextStyle(
-                color: Color(0xFF0D1B2A),
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+          ],
           const SizedBox(height: 8),
 
           Text(
@@ -1028,47 +1056,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }),
         ],
       ),
-    );
-  }
-
-  // ── Bottom Nav Bar ───────────────────────────────────────
-  Widget _buildBottomNavBar(bool isDark) {
-    return BottomNavigationBar(
-      backgroundColor:
-          isDark ? const Color(0xFF0D1B2A) : Colors.white,
-      selectedItemColor: const Color(0xFFF5B800),
-      unselectedItemColor: isDark ? Colors.white38 : Colors.black38,
-      type: BottomNavigationBarType.fixed,
-      currentIndex: 4,
-      onTap: (index) {
-        // Other tabs wired by teammates
-      },
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.people_outline),
-          activeIcon: Icon(Icons.people),
-          label: 'Clubs',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: 'Search',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.message_outlined),
-          activeIcon: Icon(Icons.message),
-          label: 'Messages',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline),
-          activeIcon: Icon(Icons.person),
-          label: 'Profile',
-        ),
-      ],
     );
   }
 }

@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/auth_widgets.dart';
-import '../../services/auth_service.dart';
-import '../main_shell.dart';
-import 'onboarding_screen.dart';
+import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final ValueChanged<bool> onDarkModeToggle;
+
+  const SplashScreen({super.key, required this.onDarkModeToggle});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -50,12 +50,10 @@ class _SplashScreenState extends State<SplashScreen>
 
     Future.delayed(const Duration(milliseconds: 2800), () async {
       if (!mounted) return;
-      await AuthService.init();
-      final signedIn = await AuthService.isSignedIn();
-
       Navigator.of(context).pushReplacement(PageRouteBuilder(
-        pageBuilder: (_, __, ___) =>
-            signedIn ? MainShell(onDarkModeToggle: (_) {}) : const OnboardingScreen(),
+        pageBuilder: (_, __, ___) => LoginScreen(
+          onDarkModeToggle: widget.onDarkModeToggle,
+        ),
         transitionsBuilder: (_, a, __, child) =>
             FadeTransition(opacity: a, child: child),
         transitionDuration: const Duration(milliseconds: 500),

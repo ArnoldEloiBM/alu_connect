@@ -48,7 +48,9 @@ const _pages = [
 //  Screen
 // ─────────────────────────────────────────────
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  final ValueChanged<bool> onDarkModeToggle;
+
+  const OnboardingScreen({super.key, required this.onDarkModeToggle});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -125,13 +127,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           label: 'Create Account',
                           onPressed: () => Navigator.of(context).push(
                               MaterialPageRoute(
-                                  builder: (_) => const SignUpScreen()))),
+                                  builder: (_) => SignUpScreen(
+                                        onDarkModeToggle:
+                                            widget.onDarkModeToggle,
+                                      )))),
                       const SizedBox(height: 12),
                       OutlinedGoldButton(
                           label: 'Sign In',
                           onPressed: () => Navigator.of(context).push(
                               MaterialPageRoute(
-                                  builder: (_) => const LoginScreen()))),
+                                  builder: (_) => LoginScreen(
+                                        onDarkModeToggle:
+                                            widget.onDarkModeToggle,
+                                      )))),
                     ])
                   : GoldButton(label: 'Next', onPressed: _next),
             ),

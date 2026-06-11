@@ -3,6 +3,7 @@
 
 class User{
   String name;
+  String email;
   String major;
   String campus;
   String classYear;
@@ -18,6 +19,7 @@ class User{
 
   User({
     required this.name,
+    this.email = '',
     required this.major,
     required this.campus,
     required this.classYear,

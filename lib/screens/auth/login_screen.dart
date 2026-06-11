@@ -7,9 +7,12 @@ import 'signup_screen.dart';
 import 'forgot_password_screen.dart';
 import '../../services/auth_service.dart';
 import '../../data/mock_repository.dart';
+import '../../services/user_session.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final ValueChanged<bool> onDarkModeToggle;
+
+  const LoginScreen({super.key, required this.onDarkModeToggle});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -23,18 +26,9 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _serverError;
 
   // ── Validation ──────────────────────────────────────────
-  String? _validateEmail(String? v) {
-    if (v == null || v.trim().isEmpty) return 'Email is required';
-    final re = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    if (!re.hasMatch(v.trim())) return 'Enter a valid email address';
-    return null;
-  }
+  String? _validateEmail(String? v) => AuthService.validateAluStudentEmail(v);
 
-  String? _validatePassword(String? v) {
-    if (v == null || v.isEmpty) return 'Password is required';
-    if (v.length < 6) return 'Password must be at least 6 characters';
-    return null;
-  }
+  String? _validatePassword(String? v) => AuthService.validateStrongPassword(v);
 
   // ── Submit ───────────────────────────────────────────────
   Future<void> _submit() async {
@@ -43,51 +37,38 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 1400)); // mock auth
+    await Future.delayed(const Duration(milliseconds: 900));
+    if (!mounted) return;
+
+    final email = _emailCtrl.text.trim().toLowerCase();
+    final password = _passCtrl.text;
+
+    final approved = await AuthService.signIn(email: email, password: password);
     if (!mounted) return;
     setState(() => _loading = false);
 
-    final email = _emailCtrl.text.trim();
-    
-    // Check if user profile exists; if not, auto-create a mock one based on email prefix
-    final exists = await AuthService.hasUserProfile(email);
-    String finalName;
-    if (!exists) {
-      String derivedName = 'Kwame Mensah';
-      try {
-        final prefix = email.split('@').first;
-        final parts = prefix.split(RegExp(r'[._-]'));
-        derivedName = parts.map((p) {
-          if (p.isEmpty) return '';
-          return p[0].toUpperCase() + p.substring(1).toLowerCase();
-        }).join(' ');
-      } catch (_) {}
-
-      await AuthService.saveUserProfile(
-        email: email,
-        fullName: derivedName,
-        role: 'student',
-        isAlumni: false,
-        intakeMonth: 'September',
-        intakeYear: '2023',
-        faculty: 'BSE',
-      );
-      finalName = derivedName;
-    } else {
-      final profile = await AuthService.getUserProfile(email);
-      finalName = profile != null && profile['fullName'] is String
-          ? (profile['fullName'] as String)
-          : email.split('@').first;
+    if (!approved) {
+      setState(() {
+        _serverError =
+            'Invalid email or password. Use ${AuthService.demoEmail} / ${AuthService.demoPassword} for the demo account, or sign up first.';
+      });
+      return;
     }
 
-    // Set logged-in session
-    await AuthService.setCurrentUserEmail(email);
+    final profile = await AuthService.getUserProfile(email);
+    final finalName = profile != null && profile['fullName'] is String
+        ? (profile['fullName'] as String)
+        : email.split('@').first;
 
-    // Update the repository so Home feed shows the user's real name
+    await AuthService.setCurrentUserEmail(email);
+    await UserSession.instance.setDisplayName(finalName);
     MockRepository.instance.greetingName = finalName;
 
+    if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => MainShell(onDarkModeToggle: (_) {})),
+      MaterialPageRoute(
+        builder: (_) => MainShell(onDarkModeToggle: widget.onDarkModeToggle),
+      ),
       (r) => false,
     );
   }
@@ -136,6 +117,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: AppColors.textSecondary,
                   ),
                 ),
+                const SizedBox(height: 10),
+                Text(
+                  'Demo: ${AuthService.demoEmail} / ${AuthService.demoPassword}',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    color: AppColors.gold,
+                  ),
+                ),
 
                 const SizedBox(height: 32),
 
@@ -148,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // ── Fields ────────────────────────────────────────────
                 AuthField(
                   label: 'Email address',
-                  hint: 'you@alueducation.com',
+                  hint: AuthService.emailHint,
                   controller: _emailCtrl,
                   prefixIcon: Icons.alternate_email_rounded,
                   keyboardType: TextInputType.emailAddress,
@@ -176,8 +166,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: TextButton(
                     onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                            builder: (_) =>
-                                const ForgotPasswordScreen())),
+                            builder: (_) => ForgotPasswordScreen(
+                                  onDarkModeToggle: widget.onDarkModeToggle,
+                                ))),
                     child: const Text('Forgot password?'),
                   ),
                 ),
@@ -206,7 +197,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: GestureDetector(
                     onTap: () => Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                            builder: (_) => const SignUpScreen())),
+                            builder: (_) => SignUpScreen(
+                                  onDarkModeToggle: widget.onDarkModeToggle,
+                                ))),
                     child: RichText(
                       text: const TextSpan(
                         text: "Don't have an account?  ",
