@@ -9,6 +9,7 @@ import '../widgets/filter_chips.dart';
 import '../widgets/opportunity_cards.dart';
 import '../widgets/section_header.dart';
 import 'event_details_screen.dart';
+import 'search_screen.dart';
 
 /// Screen 1 — the dynamic Home feed: greeting, type filters, "Trending Now"
 /// and "Upcoming Deadlines".
@@ -58,8 +59,20 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        actions: const [
-          Padding(
+        actions: [
+          IconButton(
+            tooltip: 'Search',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  fullscreenDialog: true,
+                  builder: (_) => const SearchScreen(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.search, size: 24),
+          ),
+          const Padding(
             padding: EdgeInsets.only(right: 12),
             child: Icon(Icons.notifications_none, size: 24),
           ),

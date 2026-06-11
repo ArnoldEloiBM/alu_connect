@@ -242,6 +242,117 @@ class MockRepository {
     ),
     Discussion(id: 'd2', title: 'Club Fair \'24', participants: 18),
     Discussion(id: 'd3', title: 'Bug Hunters', participants: 9),
+    Discussion(id: 'd4', title: 'Green Tech Collaboration', participants: 34),
+    Discussion(id: 'd5', title: 'Design Sprint Ideas', participants: 27),
+  ];
+
+  final List<Community> _communities = [
+    Community(
+      id: 'c1',
+      name: 'AI & ML Society',
+      category: 'Tech',
+      description:
+          'A community for learners and builders exploring machine learning, data science, and AI-driven products.',
+      imageUrl: _img('1500534623284-43e6a8d38cad'),
+      members: 82,
+      discussions: const [
+        Discussion(id: 'd1', title: 'Impact of AI in Mauritius Startups', participants: 45),
+        Discussion(id: 'd5', title: 'Design Sprint Ideas', participants: 27),
+      ],
+    ),
+    Community(
+      id: 'c2',
+      name: 'Entrepreneurship Hub',
+      category: 'Entrepreneurship',
+      description:
+          'Founders and operators share funding tips, pitch feedback, and partner opportunities.',
+      imageUrl: _img('1507679799987-c73779587ccf'),
+      members: 119,
+      discussions: const [
+        Discussion(id: 'd2', title: 'Club Fair \'24', participants: 18),
+        Discussion(id: 'd4', title: 'Green Tech Collaboration', participants: 34),
+      ],
+    ),
+    Community(
+      id: 'c3',
+      name: 'Leadership Forum',
+      category: 'Leadership',
+      description:
+          'Peer-led conversations on leading teams, running student projects, and building lifecycle skills.',
+      imageUrl: _img('1494790108377-be9c29b29330'),
+      members: 64,
+      discussions: const [
+        Discussion(id: 'd3', title: 'Bug Hunters', participants: 9),
+      ],
+    ),
+  ];
+
+  final List<ChatThread> _chatThreads = [
+    ChatThread(
+      id: 'thread-c1',
+      title: 'AI & ML Society',
+      subtitle: 'Community chat',
+      lastMessage: 'Can we meet after the workshop?',
+      timestamp: DateTime(2026, 6, 10, 16, 30),
+      unreadCount: 3,
+      isGroup: true,
+      communityId: 'c1',
+    ),
+    ChatThread(
+      id: 'thread-c2',
+      title: 'Entrepreneurship Hub',
+      subtitle: 'Community chat',
+      lastMessage: 'Pitch deck review tomorrow.',
+      timestamp: DateTime(2026, 6, 9, 18, 12),
+      unreadCount: 1,
+      isGroup: true,
+      communityId: 'c2',
+    ),
+    ChatThread(
+      id: 'thread-c3',
+      title: 'Leadership Forum',
+      subtitle: 'Community chat',
+      lastMessage: 'Who wants to co-host the next session?',
+      timestamp: DateTime(2026, 6, 8, 14, 55),
+      unreadCount: 0,
+      isGroup: true,
+      communityId: 'c3',
+    ),
+  ];
+
+  final List<Message> _messages = [
+    Message(
+      id: 'm1',
+      threadId: 'thread-c1',
+      sender: 'Amina',
+      text: 'Anyone wants to join the AI lab session tomorrow?',
+      time: DateTime(2026, 6, 10, 15, 20),
+      isMine: false,
+    ),
+    Message(
+      id: 'm2',
+      threadId: 'thread-c1',
+      sender: 'You',
+      text: 'I can attend after 4pm.',
+      time: DateTime(2026, 6, 10, 15, 22),
+      isMine: true,
+    ),
+    Message(
+      id: 'm3',
+      threadId: 'thread-c1',
+      sender: 'Musa',
+      text: 'Let’s meet at the innovation hub.',
+      time: DateTime(2026, 6, 10, 15, 24),
+      isMine: false,
+    ),
+    Message(
+      id: 'm4',
+      threadId: 'thread-c1',
+      sender: 'You',
+      text: 'Sounds good! See you there.',
+      time: DateTime(2026, 6, 10, 15, 25),
+      isMine: true,
+    ),
   ];
 
   // ---- Query methods -------------------------------------------------------
@@ -263,6 +374,13 @@ class MockRepository {
   List<Discussion> get discussions => List.unmodifiable(_discussions);
 
   int get upcomingDeadlineCount => deadlines.length;
+
+  List<Community> get communities => List.unmodifiable(_communities);
+
+  List<ChatThread> get chatThreads => List.unmodifiable(_chatThreads);
+
+  List<Message> messagesForThread(String threadId) =>
+      _messages.where((message) => message.threadId == threadId).toList();
 
   /// Upcoming deadlines, soonest first.
   List<Deadline> get deadlines {

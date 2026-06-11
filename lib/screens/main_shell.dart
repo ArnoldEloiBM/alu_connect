@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../features/profile/screens/profile.dart';
 import '../theme/app_theme.dart';
-import 'discover_screen.dart';
+import 'community_list_screen.dart';
 import 'events/create_event_screen.dart';
 import 'events/my_events_screen.dart';
 import 'home_screen.dart';
+import 'messages_screen.dart';
 
-/// App scaffold with bottom navigation. Member 4 owns FAB + My Events (Profile tab).
+/// App scaffold with bottom navigation.
 class MainShell extends StatefulWidget {
-  const MainShell({super.key});
+  final ValueChanged<bool> onDarkModeToggle;
+
+  const MainShell({super.key, required this.onDarkModeToggle});
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -16,14 +20,6 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _index = 0;
-
-  late final List<Widget> _tabs = const [
-    HomeScreen(),
-    _Placeholder(label: 'Clubs', icon: Icons.groups),
-    DiscoverScreen(),
-    _Placeholder(label: 'Messages', icon: Icons.chat_bubble_outline),
-    MyEventsScreen(),
-  ];
 
   void _openCreateEvent() {
     Navigator.of(context).push(
@@ -33,11 +29,20 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    final tabs = [
+      const HomeScreen(),
+      const CommunityListScreen(),
+      const MyEventsScreen(),
+      const MessagesScreen(),
+      ProfileScreen(onDarkModeToggle: widget.onDarkModeToggle),
+    ];
+
     return Scaffold(
-      body: IndexedStack(index: _index, children: _tabs),
-      floatingActionButton: _index == 4
+      body: IndexedStack(index: _index, children: tabs),
+      floatingActionButton: _index == 2
           ? null
           : FloatingActionButton(
+              heroTag: 'main-shell-fab',
               onPressed: _openCreateEvent,
               tooltip: 'Create event',
               child: const Icon(Icons.add),
@@ -53,43 +58,19 @@ class _MainShellState extends State<MainShell> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.groups_outlined), label: 'Clubs'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event_outlined),
+            label: 'Events',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat_bubble_outline),
             label: 'Messages',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.event_note_outlined),
-            label: 'My Events',
+            icon: Icon(Icons.person_outline),
+            label: 'Profile',
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Simple stand-in for tabs owned by other team members.
-class _Placeholder extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  const _Placeholder({required this.label, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(label)),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 56, color: AppColors.textSecondary),
-            const SizedBox(height: 12),
-            Text(
-              '$label — coming soon',
-              style: const TextStyle(color: AppColors.textSecondary),
-            ),
-          ],
-        ),
       ),
     );
   }

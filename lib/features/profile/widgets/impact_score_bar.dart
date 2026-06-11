@@ -64,15 +64,24 @@ class ImpactScoreBar extends StatelessWidget {
 
           // Rank and next level
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                user.rankLabel,
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
+              Expanded(
+                child: Text(
+                  user.rankLabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                ),
               ),
-              Text(
-                'Next Level: ${user.nextLevel}',
-                style: const TextStyle(color: Colors.white54, fontSize: 11),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  'Next Level: ${user.nextLevel}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style: const TextStyle(color: Colors.white54, fontSize: 11),
+                ),
               ),
             ],
           ),

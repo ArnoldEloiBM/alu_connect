@@ -120,6 +120,7 @@ class _MyEventsScreenState extends State<MyEventsScreen>
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'my-events-fab',
         onPressed: () => _openCreate(context),
         icon: const Icon(Icons.add),
         label: const Text('Create'),

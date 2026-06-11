@@ -61,7 +61,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
     await AuthService.setCurrentUserEmail(widget.email);
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const MainShell()),
+      MaterialPageRoute(builder: (_) => MainShell(onDarkModeToggle: (_) {})),
       (r) => false,
     );
   }

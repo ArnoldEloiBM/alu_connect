@@ -26,16 +26,15 @@ void main() {
     expect(find.text('Hackathons'), findsOneWidget);
   });
 
-  testWidgets('Bottom nav switches to the Discover/Search tab',
+  testWidgets('Home search opens search screen',
       (WidgetTester tester) async {
     await tester.pumpWidget(const ALUConnectApp());
     await tester.pump();
 
-    await tester.tap(find.text('Search'));
+    await tester.tap(find.byTooltip('Search'));
     await tester.pumpAndSettle();
 
     expect(find.byType(TextField), findsOneWidget);
-    expect(find.text('Categories'), findsOneWidget);
   });
 
   testWidgets('Typing a query shows search results',
@@ -43,7 +42,7 @@ void main() {
     await tester.pumpWidget(const ALUConnectApp());
     await tester.pump();
 
-    await tester.tap(find.text('Search'));
+    await tester.tap(find.byTooltip('Search'));
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField), 'hackathon');
@@ -53,16 +52,33 @@ void main() {
     expect(find.text('ALU Innovators Hackathon'), findsWidgets);
   });
 
-  testWidgets('My Events tab renders RSVP management hub',
+  testWidgets('Events tab renders RSVP management hub',
       (WidgetTester tester) async {
     await tester.pumpWidget(const ALUConnectApp());
     await tester.pump();
 
-    await tester.tap(find.text('My Events'));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(BottomNavigationBar),
+        matching: find.text('Events'),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Attending'), findsOneWidget);
     expect(find.text('Saved'), findsOneWidget);
     expect(find.text('Organizing'), findsOneWidget);
+  });
+
+  testWidgets('Profile tab renders user profile',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const ALUConnectApp());
+    await tester.pump();
+
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Umutoni Charlotte'), findsOneWidget);
+    expect(find.text('IMPACT SCORE'), findsOneWidget);
   });
 }

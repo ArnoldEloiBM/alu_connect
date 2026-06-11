@@ -47,4 +47,29 @@ class AppTheme {
       ),
     );
   }
+
+  static ThemeData get light {
+    final base = ThemeData.light(useMaterial3: true);
+    return base.copyWith(
+      scaffoldBackgroundColor: const Color(0xFFF0F2F5),
+      colorScheme: base.colorScheme.copyWith(
+        primary: AppColors.gold,
+        secondary: AppColors.gold,
+        surface: Colors.white,
+        onPrimary: Colors.black,
+        onSurface: const Color(0xFF0D1B2A),
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        foregroundColor: Color(0xFF0D1B2A),
+        centerTitle: false,
+      ),
+      cardColor: Colors.white,
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: AppColors.gold,
+        foregroundColor: Colors.black,
+      ),
+    );
+  }
 }

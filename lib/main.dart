@@ -13,17 +13,28 @@ Future<void> main() async {
   runApp(const ALUConnectApp());
 }
 
-class ALUConnectApp extends StatelessWidget {
+class ALUConnectApp extends StatefulWidget {
   const ALUConnectApp({super.key});
+
+  @override
+  State<ALUConnectApp> createState() => _ALUConnectAppState();
+}
+
+class _ALUConnectAppState extends State<ALUConnectApp> {
+  bool _isDarkMode = true;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ALU Connect',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
       builder: (context, child) => PhoneFrame(child: child ?? const SizedBox()),
-      home: const MainShell(),
+      home: MainShell(
+        onDarkModeToggle: (isDark) => setState(() => _isDarkMode = isDark),
+      ),
     );
   }
 }

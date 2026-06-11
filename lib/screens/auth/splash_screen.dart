@@ -55,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen>
 
       Navigator.of(context).pushReplacement(PageRouteBuilder(
         pageBuilder: (_, __, ___) =>
-            signedIn ? const MainShell() : const OnboardingScreen(),
+            signedIn ? MainShell(onDarkModeToggle: (_) {}) : const OnboardingScreen(),
         transitionsBuilder: (_, a, __, child) =>
             FadeTransition(opacity: a, child: child),
         transitionDuration: const Duration(milliseconds: 500),

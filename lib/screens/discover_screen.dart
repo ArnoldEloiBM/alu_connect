@@ -5,13 +5,10 @@ import '../theme/app_theme.dart';
 import '../utils/page_transitions.dart';
 import '../widgets/category_card.dart';
 import '../widgets/opportunity_cards.dart';
-import '../widgets/search_field.dart';
 import '../widgets/section_header.dart';
 import 'event_details_screen.dart';
 
-/// Screen 2 — Discovery: search, categories, featured opportunities carousel
-/// and trending discussions. When the search box is non-empty it switches to
-/// showing live search results.
+/// Events tab — categories, featured opportunities carousel, and discussions.
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
 
@@ -21,14 +18,10 @@ class DiscoverScreen extends StatefulWidget {
 
 class _DiscoverScreenState extends State<DiscoverScreen> {
   final _repo = MockRepository.instance;
-  final _searchController = TextEditingController();
   final _featuredController = PageController(viewportFraction: 0.95);
-
-  String _query = '';
 
   @override
   void dispose() {
-    _searchController.dispose();
     _featuredController.dispose();
     super.dispose();
   }
@@ -39,36 +32,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
-  void _openFilterSheet() {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => _FilterSheet(
-        onSelect: (type) {
-          Navigator.pop(context);
-          setState(() {
-            _query = type?.label ?? '';
-            _searchController.text = _query;
-          });
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final isSearching = _query.trim().isNotEmpty;
-    final results = isSearching ? _repo.search(_query) : const <Opportunity>[];
     final featured = _repo.trending;
 
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 16,
         title: const Text(
-          'ALU Connect',
+          'Events',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         actions: const [
@@ -81,75 +53,10 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-          children: [
-            SearchField(
-              controller: _searchController,
-              onChanged: (v) => setState(() => _query = v),
-              onFilterTap: _openFilterSheet,
-            ),
-            const SizedBox(height: 20),
-
-            if (isSearching)
-              ..._buildSearchResults(results)
-            else
-              ..._buildDiscoverContent(featured),
-          ],
+          children: _buildDiscoverContent(featured),
         ),
       ),
     );
-  }
-
-  List<Widget> _buildSearchResults(List<Opportunity> results) {
-    return [
-      SectionHeader(title: 'Results (${results.length})'),
-      const SizedBox(height: 12),
-      if (results.isEmpty)
-        Container(
-          padding: const EdgeInsets.all(40),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.search_off,
-                size: 64,
-                color: AppColors.gold,
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'No results found',
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'for "$_query"',
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        )
-      else
-        for (final o in results)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: DetailedOpportunityCard(
-              opportunity: o,
-              onTap: () => _openDetails(o),
-            ),
-          ),
-    ];
   }
 
   List<Widget> _buildDiscoverContent(List<Opportunity> featured) {
@@ -304,49 +211,3 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 }
 
-/// Bottom sheet listing opportunity types to filter discovery by.
-class _FilterSheet extends StatelessWidget {
-  final ValueChanged<OpportunityType?> onSelect;
-  const _FilterSheet({required this.onSelect});
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'Filter by type',
-                style: TextStyle(
-                  color: AppColors.gold,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            ListTile(
-              leading: const Icon(Icons.clear_all, color: AppColors.textPrimary),
-              title: const Text('All',
-                  style: TextStyle(color: AppColors.textPrimary)),
-              onTap: () => onSelect(null),
-            ),
-            for (final t in OpportunityType.values)
-              ListTile(
-                leading: const Icon(Icons.label_outline,
-                    color: AppColors.textPrimary),
-                title: Text(t.label,
-                    style: const TextStyle(color: AppColors.textPrimary)),
-                onTap: () => onSelect(t),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
