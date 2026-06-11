@@ -1,6 +1,6 @@
 {
-    "name": "alu_connect",
-    "short_name": "alu_connect",
+    "name": "flutter_alu_connect",
+    "short_name": "flutter_alu_connect",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
