@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/mock_repository.dart';
+import '../services/user_session.dart';
 import '../models/models.dart';
 import '../theme/app_theme.dart';
 import '../widgets/deadline_row.dart';
@@ -68,12 +69,15 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           children: [
             // Greeting
-            Text(
-              'Welcome back, ${_repo.greetingName}!',
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+            ListenableBuilder(
+              listenable: UserSession.instance,
+              builder: (context, _) => Text(
+                'Welcome back, ${UserSession.instance.displayName}!',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
               ),
             ),
             const SizedBox(height: 4),
@@ -134,7 +138,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: DetailedOpportunityCard(
                       opportunity: o,
                       onTap: () => _openDetails(o),
-                      onRsvp: () => _openDetails(o),
                     ),
                   ),
             ],

@@ -123,7 +123,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             child: DetailedOpportunityCard(
               opportunity: o,
               onTap: () => _openDetails(o),
-              onRsvp: () => _openDetails(o),
             ),
           ),
     ];
@@ -160,7 +159,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             child: DetailedOpportunityCard(
               opportunity: featured[i],
               onTap: () => _openDetails(featured[i]),
-              onRsvp: () => _openDetails(featured[i]),
             ),
           ),
         ),

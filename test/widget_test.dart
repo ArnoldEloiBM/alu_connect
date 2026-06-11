@@ -1,11 +1,21 @@
-// Smoke tests for the ALU Connect Home Feed & Discovery feature.
+// Smoke tests for ALU Connect (feed, discovery, and RSVP/events).
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:alu_connect/main.dart';
+import 'package:alu_connect/services/event_service.dart';
+import 'package:alu_connect/services/user_session.dart';
 
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    await UserSession.instance.init();
+    await UserSession.instance.setDisplayName('Kwame');
+    await EventService.instance.init();
+  });
+
   testWidgets('Home screen renders greeting and trending feed',
       (WidgetTester tester) async {
     await tester.pumpWidget(const ALUConnectApp());
@@ -46,5 +56,18 @@ void main() {
     // Results header appears and at least one matching opportunity is shown.
     expect(find.textContaining('Results ('), findsOneWidget);
     expect(find.text('ALU Innovators Hackathon'), findsWidgets);
+  });
+
+  testWidgets('My Events tab renders RSVP management hub',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const ALUConnectApp());
+    await tester.pump();
+
+    await tester.tap(find.text('My Events'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Attending'), findsOneWidget);
+    expect(find.text('Saved'), findsOneWidget);
+    expect(find.text('Organizing'), findsOneWidget);
   });
 }

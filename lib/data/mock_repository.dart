@@ -244,6 +244,13 @@ class MockRepository {
 
   List<Opportunity> get allOpportunities => List.unmodifiable(_opportunities);
 
+  Opportunity? getById(String id) {
+    for (final o in _opportunities) {
+      if (o.id == id) return o;
+    }
+    return null;
+  }
+
   List<Opportunity> get trending =>
       _opportunities.where((o) => o.trending).toList();
 

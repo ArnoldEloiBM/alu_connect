@@ -21,6 +21,14 @@ String monthShort(DateTime d) => _months[d.month - 1];
 /// e.g. "Oct 24, 2024".
 String prettyDate(DateTime d) => '${_monthsLong[d.month - 1]} ${d.day}, ${d.year}';
 
+/// e.g. "Oct 24, 2024 · 2:30 PM".
+String prettyDateTime(DateTime d) {
+  final hour = d.hour % 12 == 0 ? 12 : d.hour % 12;
+  final minute = d.minute.toString().padLeft(2, '0');
+  final period = d.hour >= 12 ? 'PM' : 'AM';
+  return '${prettyDate(d)} · $hour:$minute $period';
+}
+
 /// Human relative copy for a deadline, e.g. "Ends in 2 days".
 String endsIn(DateTime deadline, DateTime now) {
   final diff = DateTime(deadline.year, deadline.month, deadline.day)

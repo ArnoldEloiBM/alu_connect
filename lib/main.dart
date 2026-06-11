@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+
+import 'screens/main_shell.dart';
+import 'services/event_service.dart';
+import 'services/user_session.dart';
 import 'theme/app_theme.dart';
 import 'widgets/phone_frame.dart';
-import 'screens/main_shell.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await UserSession.instance.init();
+  await EventService.instance.init();
   runApp(const ALUConnectApp());
 }
 
