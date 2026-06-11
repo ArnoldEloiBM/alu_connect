@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 import 'widgets/phone_frame.dart';
-import 'screens/main_shell.dart';
+import 'screens/auth/splash_screen.dart';
 
 void main() {
   runApp(const ALUConnectApp());
@@ -17,7 +17,7 @@ class ALUConnectApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
       builder: (context, child) => PhoneFrame(child: child ?? const SizedBox()),
-      home: const MainShell(),
+      home: const SplashScreen(),
     );
   }
 }
